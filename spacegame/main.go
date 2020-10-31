@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	ebiten.SetFullscreen(true)
+	//ebiten.SetFullscreen(true)
 	screenWidth, screenHeight = ebiten.ScreenSizeInFullscreen()
 }
 
