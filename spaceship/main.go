@@ -6,12 +6,22 @@ tutorial: https://medium.com/@chrisandrews_76960/2d-game-development-in-golang-p
 
 package main
 
-import "github.com/hajimehoshi/ebiten"
+import (
+	"log"
+
+	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
+)
+
+const (
+	screenWidth, screenHeight = 640, 480
+)
 
 var (
 	err        error
 	background *ebiten.Image
 	spaceShip  *ebiten.Image
+	playerOne  player
 )
 
 type player struct {
@@ -20,6 +30,38 @@ type player struct {
 	speed      float64
 }
 
-func main() {
+// load assets
+func init() {
+	background, _, err = ebitenutil.NewImageFromFile("assets/space.png", ebiten.FilterDefault)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	spaceShip, _, err = ebitenutil.NewImageFromFile("assets/rocket.png", ebiten.FilterDefault)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	playerOne = player{spaceShip, screenWidth / 2.0, screenHeight / 2.0, 4}
+}
+
+func update(screen *ebiten.Image) error {
+	if ebiten.IsDrawingSkipped() {
+		return nil
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, 0)
+	screen.DrawImage(background, op)
+
+	playerOp := &ebiten.DrawImageOptions{}
+	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
+	screen.DrawImage(playerOne.image, playerOp)
+
+	return nil
+}
+
+func main() {
+	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Hello, World!"); err != nil {
+		log.Fatal(err)
+	}
 }
