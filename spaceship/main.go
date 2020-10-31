@@ -45,10 +45,31 @@ func init() {
 	playerOne = player{spaceShip, screenWidth / 2.0, screenHeight / 2.0, 4}
 }
 
+func movePlayer() {
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		playerOne.yPos -= playerOne.speed
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		playerOne.yPos += playerOne.speed
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		playerOne.xPos -= playerOne.speed
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		playerOne.xPos += playerOne.speed
+	}
+}
+
 func update(screen *ebiten.Image) error {
+	movePlayer()
+
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(0, 0)
 	screen.DrawImage(background, op)
