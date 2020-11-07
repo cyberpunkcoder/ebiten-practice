@@ -1,6 +1,6 @@
 /*
 author: cyberpunkprogrammer
-date: 10-30-2020
+start date: 10-30-2020
 */
 
 package main
@@ -27,9 +27,21 @@ func init() {
 	screenHeight /= scale
 
 	game.CreatePlayer(float64(screenWidth/2), float64(screenHeight/2))
+	game.Player.DecreaseRspd()
+}
+
+func control() {
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		game.Player.DecreaseRspd()
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		game.Player.IncreaseRspd()
+	}
 }
 
 func update(screen *ebiten.Image) error {
+	control()
 
 	if ebiten.IsDrawingSkipped() {
 		return nil

@@ -1,25 +1,47 @@
 package game
 
 import (
+	"log"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-// Player that the user controls
 var (
-	Player object
+	Player player
 )
 
-// CreatePlayer for user to control at coordinates
+type player struct {
+	object
+	lives int
+}
+
+// Controls the player
+type Controls interface {
+	IncreaseRspd()
+	DecreaseRspd()
+}
+
+// CreatePlayer at coordinates
 func CreatePlayer(x float64, y float64) {
 	Player.image, _, err = ebitenutil.NewImageFromFile("assets/player.png", ebiten.FilterDefault)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	Player.xPos = x
 	Player.yPos = y
-	Player.rPos = 0
 	Player.xSpd = 0
 	Player.ySpd = 0
 	Player.rSpd = 0
+	Player.lives = 3
+}
 
-	// Add player to list of objects
-	All = append(All, Player)
+func (plr player) IncreaseRspd() {
+	plr.rSpd++
+}
+
+func (plr player) DecreaseRspd() {
+	plr.rSpd--
 }
