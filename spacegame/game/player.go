@@ -2,6 +2,7 @@ package game
 
 import (
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
@@ -12,7 +13,7 @@ var (
 	Player player
 
 	rmax float64 = 10
-	vmax float64 = 10
+	vmax float64 = 1
 )
 
 type player struct {
@@ -24,6 +25,8 @@ type player struct {
 type Controls interface {
 	IncreaseRspd()
 	DecreaseRspd()
+	IncreaseVelocity()
+	DecreaseVelocity()
 }
 
 // CreatePlayer at coordinates
@@ -53,5 +56,27 @@ func (plr *player) IncreaseRspd() {
 func (plr *player) DecreaseRspd() {
 	if plr.rSpd > -rmax {
 		plr.rSpd -= 0.1
+	}
+}
+
+func (plr *player) IncreaseVelocity() {
+	radAng := (plr.rPos + 90) * (math.Pi / 180)
+	xSpd := plr.xSpd - 0.01*math.Cos(radAng)
+	ySpd := plr.ySpd - 0.01*math.Sin(radAng)
+
+	if math.Abs(xSpd)+math.Abs(ySpd) < vmax {
+		plr.xSpd = xSpd
+		plr.ySpd = ySpd
+	}
+}
+
+func (plr *player) DecreaseVelocity() {
+	radAng := (plr.rPos + 90) * (math.Pi / 180)
+	xSpd := plr.xSpd + 0.01*math.Cos(radAng)
+	ySpd := plr.ySpd + 0.01*math.Sin(radAng)
+
+	if math.Abs(xSpd)+math.Abs(ySpd) < vmax {
+		plr.xSpd = xSpd
+		plr.ySpd = ySpd
 	}
 }

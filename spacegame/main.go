@@ -11,6 +11,7 @@ import (
 
 	"github.com/cyberpunkprogrammer/ebiten-practice/spacegame/game"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 // Err error created by the game
@@ -35,11 +36,19 @@ func control() {
 		os.Exit(0)
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
+		game.Player.IncreaseVelocity()
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyDown) || ebiten.IsKeyPressed(ebiten.KeyS) {
+		game.Player.DecreaseVelocity()
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
 		game.Player.DecreaseRspd()
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+	if ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD) {
 		game.Player.IncreaseRspd()
 	}
 }
@@ -56,6 +65,8 @@ func update(screen *ebiten.Image) error {
 	op := &ebiten.DrawImageOptions{}
 
 	game.Player.Draw(screen, op)
+
+	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)
 
 	return nil
 }
