@@ -15,7 +15,7 @@ import (
 // Err error created by the game
 var (
 	Err                              error
-	screenWidth, screenHeight, scale = 640, 480, 2
+	screenWidth, screenHeight, scale = 640, 480, 3
 )
 
 func init() {
@@ -27,7 +27,6 @@ func init() {
 	screenHeight /= scale
 
 	game.CreatePlayer(float64(screenWidth/2), float64(screenHeight/2))
-	game.Player.DecreaseRspd()
 }
 
 func control() {
@@ -42,6 +41,8 @@ func control() {
 
 func update(screen *ebiten.Image) error {
 	control()
+
+	game.Player.Update()
 
 	if ebiten.IsDrawingSkipped() {
 		return nil

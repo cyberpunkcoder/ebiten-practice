@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
+// Player the user controls
 var (
 	Player player
 )
@@ -34,14 +35,16 @@ func CreatePlayer(x float64, y float64) {
 	Player.yPos = y
 	Player.xSpd = 0
 	Player.ySpd = 0
-	Player.rSpd = 0
+	Player.rSpd = 1
 	Player.lives = 3
+
+	All = append(All, Player.object)
 }
 
-func (plr player) IncreaseRspd() {
-	plr.rSpd++
+func (plr *player) IncreaseRspd() {
+	plr.rSpd += 0.1
 }
 
-func (plr player) DecreaseRspd() {
-	plr.rSpd--
+func (plr *player) DecreaseRspd() {
+	plr.rSpd -= 0.1
 }

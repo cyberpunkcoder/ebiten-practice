@@ -1,6 +1,8 @@
 package game
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -13,7 +15,7 @@ var (
 
 // Object shown on screen
 type Object interface {
-	GetPos() (float64, float64)
+	Update()
 	Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions)
 }
 
@@ -23,8 +25,16 @@ type object struct {
 	xSpd, ySpd, rSpd float64
 }
 
-func (obj object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
+func (obj *object) Update() {
+	obj.xPos += obj.xSpd
+	obj.yPos += obj.ySpd
+	obj.rPos += obj.rSpd
+}
+
+func (obj *object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
 	imgWidth, imgHeight := obj.image.Size()
-	op.GeoM.Translate(obj.xPos-(float64(imgWidth)/2), obj.yPos-(float64(imgHeight/2)))
+	op.GeoM.Translate(-float64(imgWidth)/2, -float64(imgHeight)/2)
+	op.GeoM.Rotate(float64(obj.rPos) * 2 * math.Pi / 360)
+	op.GeoM.Translate(obj.xPos, obj.yPos)
 	screen.DrawImage(obj.image, op)
 }
