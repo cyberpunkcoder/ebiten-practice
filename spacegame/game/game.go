@@ -1,9 +1,11 @@
 package game
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 // All objects within the game
@@ -28,7 +30,7 @@ type object struct {
 func (obj *object) Update() {
 	obj.xPos += obj.xSpd
 	obj.yPos += obj.ySpd
-	obj.rPos += obj.rSpd
+	obj.rPos = math.Mod(obj.rPos+obj.rSpd, 360)
 }
 
 func (obj *object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
@@ -37,4 +39,7 @@ func (obj *object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
 	op.GeoM.Rotate(float64(obj.rPos) * 2 * math.Pi / 360)
 	op.GeoM.Translate(obj.xPos, obj.yPos)
 	screen.DrawImage(obj.image, op)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("xPos = %f", obj.xPos), 0, 0)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("yPos = %f", obj.yPos), 0, 12)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("rPos = %f", obj.rPos), 0, 24)
 }

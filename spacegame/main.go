@@ -7,6 +7,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/cyberpunkprogrammer/ebiten-practice/spacegame/game"
 	"github.com/hajimehoshi/ebiten"
@@ -19,7 +20,7 @@ var (
 )
 
 func init() {
-	//ebiten.SetFullscreen(true)
+	ebiten.SetFullscreen(true)
 
 	// scale up pixel art for aesthetics
 	screenWidth, screenHeight = ebiten.ScreenSizeInFullscreen()
@@ -30,6 +31,10 @@ func init() {
 }
 
 func control() {
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		os.Exit(0)
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
 		game.Player.DecreaseRspd()
 	}
