@@ -8,25 +8,15 @@ package main
 import (
 	"log"
 
+	"github.com/cyberpunkprogrammer/ebiten-practice/spacegame/game"
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
+// Err error created by the game
 var (
-	err                              error
+	Err                              error
 	screenWidth, screenHeight, scale = 640, 480, 2
-	backgroundImage                  *ebiten.Image
-	playerImage                      *ebiten.Image
-	bulletImage                      *ebiten.Image
-	enemyImage                       *ebiten.Image
-	player                           object
 )
-
-type object struct {
-	image            *ebiten.Image
-	xPos, yPos       float64
-	xSpd, ySpd, rSpd float64
-}
 
 func init() {
 	//ebiten.SetFullscreen(true)
@@ -36,16 +26,7 @@ func init() {
 	screenWidth /= scale
 	screenHeight /= scale
 
-	playerImage, _, err = ebitenutil.NewImageFromFile("assets/player.png", ebiten.FilterDefault)
-	player.image = playerImage
-
-	// position player at center of screen
-	playerImageX, playerImageY := player.image.Size()
-	player.xPos = float64((screenWidth / 2) - (playerImageX / 2))
-	player.yPos = float64((screenHeight / 2) - (playerImageY / 2))
-
-	// make player still
-	player.xSpd, player.ySpd, player.rSpd = 0, 0, 0
+	game.CreatePlayer(float64(screenWidth/2), float64(screenHeight/2))
 }
 
 func update(screen *ebiten.Image) error {
@@ -54,9 +35,9 @@ func update(screen *ebiten.Image) error {
 		return nil
 	}
 
-	playerOp := &ebiten.DrawImageOptions{}
-	playerOp.GeoM.Translate(player.xPos, player.yPos)
-	screen.DrawImage(player.image, playerOp)
+	op := &ebiten.DrawImageOptions{}
+
+	game.Player.Draw(screen, op)
 
 	return nil
 }
