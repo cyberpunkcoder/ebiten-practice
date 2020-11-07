@@ -10,6 +10,9 @@ import (
 // Player the user controls
 var (
 	Player player
+
+	rmax float64 = 10
+	vmax float64 = 10
 )
 
 type player struct {
@@ -35,16 +38,20 @@ func CreatePlayer(x float64, y float64) {
 	Player.yPos = y
 	Player.xSpd = 0
 	Player.ySpd = 0
-	Player.rSpd = 1
+	Player.rSpd = 0
 	Player.lives = 3
 
 	All = append(All, Player.object)
 }
 
 func (plr *player) IncreaseRspd() {
-	plr.rSpd += 0.1
+	if plr.rSpd < rmax {
+		plr.rSpd += 0.1
+	}
 }
 
 func (plr *player) DecreaseRspd() {
-	plr.rSpd -= 0.1
+	if plr.rSpd > -rmax {
+		plr.rSpd -= 0.1
+	}
 }
