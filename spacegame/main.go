@@ -17,7 +17,7 @@ import (
 // Err error created by the game
 var (
 	Err                              error
-	screenWidth, screenHeight, scale = 640, 480, 3
+	screenWidth, screenHeight, scale = 640, 480, 4
 )
 
 func init() {
@@ -65,8 +65,8 @@ func update(screen *ebiten.Image) error {
 	op := &ebiten.DrawImageOptions{}
 
 	for i := range game.All {
-		game.All[i].Update()
 		game.All[i].Draw(screen, op)
+		game.All[i].Update()
 	}
 
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)

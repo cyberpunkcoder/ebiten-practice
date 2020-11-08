@@ -3,9 +3,6 @@ package game
 import (
 	"log"
 	"math"
-
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 // Player the user controls
@@ -15,9 +12,13 @@ var (
 
 type player struct {
 	*object
-	lives int
-	rmax  float64
-	vmax  float64
+	lives        int
+	rmax         float64
+	vmax         float64
+	cwBoosters   bool
+	ccwBoosters  bool
+	vincBoosters bool
+	vdecBoosters bool
 }
 
 // Controls the player
@@ -30,8 +31,6 @@ type Controls interface {
 
 // CreatePlayer at coordinates
 func CreatePlayer(x float64, y float64) {
-
-	playerImage, _, err := ebitenutil.NewImageFromFile("assets/player.png", ebiten.FilterDefault)
 
 	if err != nil {
 		log.Fatal(err)
@@ -57,12 +56,14 @@ func CreatePlayer(x float64, y float64) {
 func (plr *player) IncreaseRspd() {
 	if plr.rSpd < plr.rmax {
 		plr.rSpd += 0.1
+		plr.cwBoosters = true
 	}
 }
 
 func (plr *player) DecreaseRspd() {
 	if plr.rSpd > -plr.rmax {
 		plr.rSpd -= 0.1
+		plr.ccwBoosters = true
 	}
 }
 
@@ -74,6 +75,7 @@ func (plr *player) IncreaseVelocity() {
 	if math.Abs(xSpd)+math.Abs(ySpd) < plr.vmax {
 		plr.xSpd = xSpd
 		plr.ySpd = ySpd
+		plr.vincBoosters = true
 	}
 }
 
@@ -85,5 +87,6 @@ func (plr *player) DecreaseVelocity() {
 	if math.Abs(xSpd)+math.Abs(ySpd) < plr.vmax {
 		plr.xSpd = xSpd
 		plr.ySpd = ySpd
+		plr.vdecBoosters = true
 	}
 }

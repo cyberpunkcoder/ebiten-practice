@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"image"
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
@@ -32,6 +33,13 @@ func (obj *object) Update() {
 	obj.xPos += obj.xSpd
 	obj.yPos += obj.ySpd
 	obj.rPos = math.Mod(obj.rPos+obj.rSpd, 360)
+
+	if obj == Player.object {
+		Player.cwBoosters = false
+		Player.ccwBoosters = false
+		Player.vincBoosters = false
+		Player.vdecBoosters = false
+	}
 }
 
 func (obj *object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
@@ -40,7 +48,42 @@ func (obj *object) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
 	op.GeoM.Rotate(float64(obj.rPos) * 2 * math.Pi / 360)
 	op.GeoM.Translate(obj.xPos, obj.yPos)
 	screen.DrawImage(obj.image, op)
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("xPos = %f", obj.xPos), 0, 12)
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("yPos = %f", obj.yPos), 0, 24)
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("rPos = %f", obj.rPos), 0, 36)
+
+	if obj == Player.object {
+		i := (Count / 2) % 2
+
+		if Player.ccwBoosters {
+			screen.DrawImage(rcsfl.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+			screen.DrawImage(rcsbr.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+		}
+
+		if Player.cwBoosters {
+			screen.DrawImage(rcsfr.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+			screen.DrawImage(rcsbl.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+		}
+
+		if Player.vincBoosters {
+			if !Player.cwBoosters {
+				screen.DrawImage(rcsbl.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+			}
+
+			if !Player.ccwBoosters {
+				screen.DrawImage(rcsbr.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+			}
+		}
+
+		if Player.vdecBoosters {
+			if !Player.ccwBoosters {
+				screen.DrawImage(rcsfl.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+			}
+
+			if !Player.cwBoosters {
+			}
+			screen.DrawImage(rcsfr.SubImage(image.Rect(i*imgWidth, 0, 32+(i*imgWidth), 32)).(*ebiten.Image), op)
+		}
+
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("xPos = %f", obj.xPos), 0, 12)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("yPos = %f", obj.yPos), 0, 24)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("rPos = %f", obj.rPos), 0, 36)
+	}
 }
