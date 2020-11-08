@@ -54,9 +54,9 @@ func control() {
 }
 
 func update(screen *ebiten.Image) error {
-	control()
+	game.Count++
 
-	game.Player.Update()
+	control()
 
 	if ebiten.IsDrawingSkipped() {
 		return nil
@@ -64,7 +64,10 @@ func update(screen *ebiten.Image) error {
 
 	op := &ebiten.DrawImageOptions{}
 
-	game.Player.Draw(screen, op)
+	for i := range game.All {
+		game.All[i].Update()
+		game.All[i].Draw(screen, op)
+	}
 
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)
 

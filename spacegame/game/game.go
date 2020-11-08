@@ -8,11 +8,12 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-// All objects within the game
+// Count of frames in the game
+// All objects in the game
 var (
-	All []object
-
-	err error
+	Count int
+	All   []object
+	err   error
 )
 
 // Object shown on screen
