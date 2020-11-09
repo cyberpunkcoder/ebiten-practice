@@ -17,7 +17,7 @@ import (
 // Err error created by the game
 var (
 	Err                              error
-	screenWidth, screenHeight, scale = 640, 480, 4
+	screenWidth, screenHeight, scale = 640, 480, 3
 )
 
 func init() {
