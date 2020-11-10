@@ -1,30 +1,45 @@
 /*
 author: cyberpunkprogrammer
-date: 10-25-2020
+date: 11-10-2020
 tutorial: https://medium.com/@chrisandrews_76960/2d-game-development-in-golang-part-1-5e2c11a513ed
+Updated or ebiten v2.0
 */
 
 package main
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-// update the text hello world on the screen
-func update(screen *ebiten.Image) error {
-	if ebiten.IsDrawingSkipped() {
-		return nil
-	}
-	ebitenutil.DebugPrint(screen, "Hello world!")
+// Game basic values
+type Game struct{}
+
+// Update the logical state
+func (g *Game) Update() error {
+
 	return nil
+}
+
+// Draw to the screen
+func (g *Game) Draw(screen *ebiten.Image) {
+
+	ebitenutil.DebugPrint(screen, "Hello world!")
+}
+
+// Layout the scene
+func (g *Game) Layout(ousideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+
+	return 320, 240
 }
 
 // main loop
 func main() {
-	if err := ebiten.Run(update, 320, 240, 2, "Hello world!"); err != nil {
-		log.Fatal(err)
+	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowTitle("Hello world!")
+
+	game := &Game{}
+	if err := ebiten.RunGame(game); err != nil {
+		panic(err)
 	}
 }
