@@ -1,12 +1,14 @@
 /*
 author: cyberpunkprogrammer
-date: 10-30-2020
+date: 11-10-2020
 tutorial: https://medium.com/@chrisandrews_76960/2d-game-development-in-golang-part-3-a296aedea77b
+Updated for ebiten v2
 */
 
 package main
 
 import (
+	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten"
@@ -24,28 +26,38 @@ var (
 	playerOne  player
 )
 
+// Game struct for ebiten
+type Game struct{}
+
 type player struct {
 	image      *ebiten.Image
 	xPos, yPos float64
 	speed      float64
 }
 
-// load assets
-func init() {
-	background, _, err = ebitenutil.NewImageFromFile("assets/space.png", ebiten.FilterDefault)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	spaceShip, _, err = ebitenutil.NewImageFromFile("assets/rocket.png", ebiten.FilterDefault)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	playerOne = player{spaceShip, screenWidth / 2.0, screenHeight / 2.0, 4}
+// Layout the screen
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return 640, 480
 }
 
-func movePlayer() {
+// Update the logical state
+func (g *Game) Update() error {
+	control()
+	return nil
+}
+
+// Draw the screen
+func (g *Game) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, 0)
+	screen.DrawImage(background, op)
+
+	playerOp := &ebiten.DrawImageOptions{}
+	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
+	screen.DrawImage(playerOne.image, playerOp)
+}
+
+func control() {
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
 		playerOne.yPos -= playerOne.speed
 	}
@@ -63,26 +75,23 @@ func movePlayer() {
 	}
 }
 
-func update(screen *ebiten.Image) error {
-	movePlayer()
-
-	if ebiten.IsDrawingSkipped() {
-		return nil
+func init() {
+	background, _, err = ebitenutil.NewImageFromFile("assets/space.png")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(0, 0)
-	screen.DrawImage(background, op)
+	spaceShip, _, err = ebitenutil.NewImageFromFile("assets/rocket.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	playerOp := &ebiten.DrawImageOptions{}
-	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
-	screen.DrawImage(playerOne.image, playerOp)
-
-	return nil
+	playerOne = player{spaceShip, screenWidth / 2.0, screenHeight / 2.0, 4}
 }
 
 func main() {
-	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Hello, World!"); err != nil {
-		log.Fatal(err)
+	game := &Game{}
+	if err := ebiten.RunGame(game); err != nil {
+		panic(err)
 	}
 }
