@@ -2,7 +2,7 @@
 author: cyberpunkprogrammer
 date: 11-10-2020
 tutorial: https://medium.com/@chrisandrews_76960/2d-game-development-in-golang-part-1-5e2c11a513ed
-Updated or ebiten v2.0
+Updated for ebiten v2
 */
 
 package main
