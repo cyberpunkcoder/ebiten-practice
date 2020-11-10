@@ -6,7 +6,6 @@ start date: 10-30-2020
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/cyberpunkprogrammer/ebiten-practice/spacegame/game"
@@ -14,11 +13,12 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-// Err error created by the game
 var (
-	Err                              error
-	screenWidth, screenHeight, scale = 640, 480, 3
+	screenWidth, screenHeight, scale = 640, 480, 4
 )
+
+// Game struct for ebiten
+type Game struct{}
 
 func init() {
 	ebiten.SetFullscreen(true)
@@ -61,14 +61,22 @@ func control() {
 	}
 }
 
-func update(screen *ebiten.Image) error {
+// Layout the screen
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return screenWidth, screenHeight
+}
+
+// Update the logical state
+func (g *Game) Update() error {
+
+	return nil
+}
+
+// Draw the screen
+func (g *Game) Draw(screen *ebiten.Image) {
 	game.Count++
 
 	control()
-
-	if ebiten.IsDrawingSkipped() {
-		return nil
-	}
 
 	op := &ebiten.DrawImageOptions{}
 
@@ -80,12 +88,11 @@ func update(screen *ebiten.Image) error {
 	game.UpdateSound()
 
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)
-
-	return nil
 }
 
 func main() {
-	if err := ebiten.Run(update, screenWidth, screenHeight, float64(scale), "Space Game"); err != nil {
-		log.Fatal(err)
+	game := &Game{}
+	if err := ebiten.RunGame(game); err != nil {
+		panic(err)
 	}
 }

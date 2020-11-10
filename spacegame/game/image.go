@@ -1,6 +1,7 @@
 package game
 
 import (
+	_ "image/png" // Required for ebitenutil.NewImageFromFile()
 	"log"
 
 	"github.com/hajimehoshi/ebiten"
@@ -16,11 +17,11 @@ var (
 )
 
 func init() {
-	playerImage, _, err = ebitenutil.NewImageFromFile("assets/player.png", ebiten.FilterDefault)
-	rcsfl, _, err = ebitenutil.NewImageFromFile("assets/rcsfl.png", ebiten.FilterDefault)
-	rcsfr, _, err = ebitenutil.NewImageFromFile("assets/rcsfr.png", ebiten.FilterDefault)
-	rcsbl, _, err = ebitenutil.NewImageFromFile("assets/rcsbl.png", ebiten.FilterDefault)
-	rcsbr, _, err = ebitenutil.NewImageFromFile("assets/rcsbr.png", ebiten.FilterDefault)
+	playerImage, _, err = ebitenutil.NewImageFromFile("assets/player.png")
+	rcsfl, _, err = ebitenutil.NewImageFromFile("assets/rcsfl.png")
+	rcsfr, _, err = ebitenutil.NewImageFromFile("assets/rcsfr.png")
+	rcsbl, _, err = ebitenutil.NewImageFromFile("assets/rcsbl.png")
+	rcsbr, _, err = ebitenutil.NewImageFromFile("assets/rcsbr.png")
 
 	if err != nil {
 		log.Fatal(err)
