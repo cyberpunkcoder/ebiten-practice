@@ -37,19 +37,27 @@ func control() {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
-		game.Player.IncreaseVelocity()
+		game.Player.FwdThrustersOn()
+	} else if !(ebiten.IsKeyPressed(ebiten.KeyUp) && !ebiten.IsKeyPressed(ebiten.KeyW)) {
+		game.Player.FwdThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) || ebiten.IsKeyPressed(ebiten.KeyS) {
-		game.Player.DecreaseVelocity()
+		game.Player.RevThrustersOn()
+	} else if !(ebiten.IsKeyPressed(ebiten.KeyDown) && ebiten.IsKeyPressed(ebiten.KeyS)) {
+		game.Player.RevThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
-		game.Player.DecreaseRspd()
+		game.Player.CcwThrustersOn()
+	} else if !(ebiten.IsKeyPressed(ebiten.KeyLeft) && ebiten.IsKeyPressed(ebiten.KeyA)) {
+		game.Player.CcwThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD) {
-		game.Player.IncreaseRspd()
+		game.Player.CwThrustersOn()
+	} else if !(ebiten.IsKeyPressed(ebiten.KeyRight) && ebiten.IsKeyPressed(ebiten.KeyD)) {
+		game.Player.CwThrustersOff()
 	}
 }
 
@@ -68,6 +76,8 @@ func update(screen *ebiten.Image) error {
 		game.All[i].Draw(screen, op)
 		game.All[i].Update()
 	}
+
+	game.UpdateSound()
 
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)
 

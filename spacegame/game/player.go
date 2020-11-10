@@ -15,18 +15,22 @@ type player struct {
 	lives        int
 	rmax         float64
 	vmax         float64
-	cwBoosters   bool
-	ccwBoosters  bool
-	vincBoosters bool
-	vdecBoosters bool
+	cwThrusters  bool
+	ccwThrusters bool
+	fwdThrusters bool
+	revThrusters bool
 }
 
 // Controls the player
 type Controls interface {
-	IncreaseRspd()
-	DecreaseRspd()
-	IncreaseVelocity()
-	DecreaseVelocity()
+	CwThrustersOn()
+	CwThrustersOff()
+	CcwThrustersOn()
+	CcwThrustersOff()
+	FwdThrustersOn()
+	FwdThrustersOff()
+	RevThrustersOn()
+	RevThrustersOff()
 }
 
 // CreatePlayer at coordinates
@@ -53,21 +57,60 @@ func CreatePlayer(x float64, y float64) {
 	Player.object = &All[len(All)-1]
 }
 
-func (plr *player) IncreaseRspd() {
+// Turns on clockwise thrusters
+func (plr *player) CwThrustersOn() {
+	if !plr.cwThrusters {
+		startThrusterSound()
+	}
+
 	if plr.rSpd < plr.rmax {
 		plr.rSpd += 0.1
-		plr.cwBoosters = true
+
+		if !plr.cwThrusters {
+			startThrusterSound()
+		}
 	}
+
+	plr.cwThrusters = true
 }
 
-func (plr *player) DecreaseRspd() {
+// Turns off clockwise thrusters
+func (plr *player) CwThrustersOff() {
+	if !plr.isThrusting() {
+		stopThrusterSound()
+	}
+	plr.cwThrusters = false
+}
+
+// Turns on counter-clockwise thrusters
+func (plr *player) CcwThrustersOn() {
+	if !plr.ccwThrusters {
+		startThrusterSound()
+	}
+
 	if plr.rSpd > -plr.rmax {
 		plr.rSpd -= 0.1
-		plr.ccwBoosters = true
 	}
+
+	plr.ccwThrusters = true
 }
 
-func (plr *player) IncreaseVelocity() {
+// Turns off counter-clockwise thrusters
+func (plr *player) CcwThrustersOff() {
+	if !plr.isThrusting() {
+		stopThrusterSound()
+	}
+	plr.ccwThrusters = false
+}
+
+// Turns on forward thrusters
+func (plr *player) FwdThrustersOn() {
+
+	if !plr.fwdThrusters {
+		startThrusterSound()
+		plr.fwdThrusters = true
+	}
+
 	radAng := (plr.rPos + 90) * (math.Pi / 180)
 	xSpd := plr.xSpd - 0.01*math.Cos(radAng)
 	ySpd := plr.ySpd - 0.01*math.Sin(radAng)
@@ -75,11 +118,23 @@ func (plr *player) IncreaseVelocity() {
 	if math.Abs(xSpd)+math.Abs(ySpd) < plr.vmax {
 		plr.xSpd = xSpd
 		plr.ySpd = ySpd
-		plr.vincBoosters = true
 	}
 }
 
-func (plr *player) DecreaseVelocity() {
+// Turns off forward thrusters
+func (plr *player) FwdThrustersOff() {
+	if !plr.isThrusting() {
+		stopThrusterSound()
+	}
+	plr.fwdThrusters = false
+}
+
+// Turns on reverse thrusters
+func (plr *player) RevThrustersOn() {
+	if !plr.revThrusters {
+		startThrusterSound()
+	}
+
 	radAng := (plr.rPos + 90) * (math.Pi / 180)
 	xSpd := plr.xSpd + 0.01*math.Cos(radAng)
 	ySpd := plr.ySpd + 0.01*math.Sin(radAng)
@@ -87,6 +142,19 @@ func (plr *player) DecreaseVelocity() {
 	if math.Abs(xSpd)+math.Abs(ySpd) < plr.vmax {
 		plr.xSpd = xSpd
 		plr.ySpd = ySpd
-		plr.vdecBoosters = true
 	}
+
+	plr.revThrusters = true
+}
+
+// Turns off reverse thrusters
+func (plr *player) RevThrustersOff() {
+	if !plr.isThrusting() {
+		stopThrusterSound()
+	}
+	plr.revThrusters = false
+}
+
+func (plr *player) isThrusting() bool {
+	return plr.fwdThrusters || plr.revThrusters || plr.cwThrusters || plr.ccwThrusters
 }
