@@ -1,4 +1,4 @@
-package game
+package main
 
 import (
 	_ "image/png" // Required for ebitenutil.NewImageFromFile()
@@ -9,15 +9,17 @@ import (
 )
 
 var (
-	playerImage *ebiten.Image
-	rcsfl       *ebiten.Image
-	rcsfr       *ebiten.Image
-	rcsbl       *ebiten.Image
-	rcsbr       *ebiten.Image
+	shipImage *ebiten.Image
+	rcsfl     *ebiten.Image
+	rcsfr     *ebiten.Image
+	rcsbl     *ebiten.Image
+	rcsbr     *ebiten.Image
+	err       error
 )
 
-func init() {
-	playerImage, _, err = ebitenutil.NewImageFromFile("assets/player.png")
+func loadImages() {
+
+	shipImage, _, err = ebitenutil.NewImageFromFile("assets/player.png")
 	rcsfl, _, err = ebitenutil.NewImageFromFile("assets/rcsfl.png")
 	rcsfr, _, err = ebitenutil.NewImageFromFile("assets/rcsfr.png")
 	rcsbl, _, err = ebitenutil.NewImageFromFile("assets/rcsbl.png")

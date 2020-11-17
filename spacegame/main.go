@@ -6,9 +6,10 @@ start date: 10-30-2020
 package main
 
 import (
+	"fmt"
+	"image"
 	"os"
 
-	"github.com/cyberpunkprogrammer/ebiten-practice/spacegame/game"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
@@ -18,46 +19,54 @@ var (
 )
 
 // Game struct for ebiten
-type Game struct{}
-
-func init() {
-	ebiten.SetFullscreen(true)
-
-	// scale up pixel art for aesthetics
-	screenWidth, screenHeight = ebiten.ScreenSizeInFullscreen()
-	screenWidth /= scale
-	screenHeight /= scale
-
-	game.CreatePlayer(float64(screenWidth/2), float64(screenHeight/2))
+type Game struct {
+	count      int
+	playerShip Ship
+	objects    []*Object
 }
 
-func control() {
+func init() {
+	loadImages()
+}
+
+func newGame() *Game {
+	g := &Game{}
+	g.init()
+	return g
+}
+
+func (g *Game) init() {
+	g.playerShip = NewShip(float64(screenWidth/2), float64(screenHeight/2))
+	g.objects = append(g.objects, &g.playerShip.Object)
+}
+
+func (g *Game) control() {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		os.Exit(0)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
-		game.Player.FwdThrustersOn()
+		g.playerShip.fwdThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyUp) && !ebiten.IsKeyPressed(ebiten.KeyW)) {
-		game.Player.FwdThrustersOff()
+		g.playerShip.fwdThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) || ebiten.IsKeyPressed(ebiten.KeyS) {
-		game.Player.RevThrustersOn()
+		g.playerShip.revThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyDown) && ebiten.IsKeyPressed(ebiten.KeyS)) {
-		game.Player.RevThrustersOff()
+		g.playerShip.revThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
-		game.Player.CcwThrustersOn()
+		g.playerShip.ccwThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyLeft) && ebiten.IsKeyPressed(ebiten.KeyA)) {
-		game.Player.CcwThrustersOff()
+		g.playerShip.ccwThrustersOff()
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD) {
-		game.Player.CwThrustersOn()
+		g.playerShip.cwThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyRight) && ebiten.IsKeyPressed(ebiten.KeyD)) {
-		game.Player.CwThrustersOff()
+		g.playerShip.cwThrustersOff()
 	}
 }
 
@@ -68,31 +77,74 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // Update the logical state
 func (g *Game) Update() error {
+	g.count++
+	g.control()
+
+	for i := range g.objects {
+		g.objects[i].Update()
+	}
 
 	return nil
 }
 
 // Draw the screen
 func (g *Game) Draw(screen *ebiten.Image) {
-	game.Count++
-
-	control()
-
 	op := &ebiten.DrawImageOptions{}
 
-	for i := range game.All {
-		game.All[i].Draw(screen, op)
-		game.All[i].Update()
+	for i := range g.objects {
+		g.objects[i].Draw(screen, op, g.count)
+
+		if g.objects[i] == &g.playerShip.Object {
+
+			frame := (g.count / 2) % 2
+
+			if g.playerShip.ccwThrusters {
+				screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+			}
+
+			if g.playerShip.cwThrusters {
+				screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+			}
+
+			if g.playerShip.fwdThrusters {
+				if !g.playerShip.cwThrusters {
+					screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				}
+
+				if !g.playerShip.ccwThrusters {
+					screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				}
+			}
+
+			if g.playerShip.revThrusters {
+				if !g.playerShip.ccwThrusters {
+					screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				}
+
+				if !g.playerShip.cwThrusters {
+					screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+				}
+			}
+		}
 	}
 
-	game.UpdateSound()
-
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("xPos = %f", g.playerShip.xPos), 0, 12)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("yPos = %f", g.playerShip.yPos), 0, 24)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("rPos = %f", g.playerShip.rPos), 0, 36)
 }
 
 func main() {
-	game := &Game{}
-	if err := ebiten.RunGame(game); err != nil {
+	ebiten.SetFullscreen(true)
+
+	// scale up pixel art for aesthetics
+	screenWidth, screenHeight = ebiten.ScreenSizeInFullscreen()
+	screenWidth /= scale
+	screenHeight /= scale
+
+	if err := ebiten.RunGame(newGame()); err != nil {
 		panic(err)
 	}
 }
