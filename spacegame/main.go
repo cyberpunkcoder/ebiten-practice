@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	screenWidth, screenHeight, scale = 640, 480, 4
+	screenWidth, screenHeight, scale = 640, 480, 3
 )
 
 // Game struct for ebiten

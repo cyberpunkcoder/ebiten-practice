@@ -46,7 +46,7 @@ func (ship *Ship) cwThrustersOn() {
 	}
 
 	if ship.rSpd < ship.rmax {
-		ship.rSpd += 0.1
+		ship.rSpd += 0.05
 	}
 }
 
@@ -66,7 +66,7 @@ func (ship *Ship) ccwThrustersOn() {
 	}
 
 	if ship.rSpd > -ship.rmax {
-		ship.rSpd -= 0.1
+		ship.rSpd -= 0.05
 	}
 }
 
