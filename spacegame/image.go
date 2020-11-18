@@ -17,7 +17,7 @@ var (
 	err       error
 )
 
-func loadImages() {
+func initImages() {
 
 	shipImage, _, err = ebitenutil.NewImageFromFile("assets/player.png")
 	rcsfl, _, err = ebitenutil.NewImageFromFile("assets/rcsfl.png")

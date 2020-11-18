@@ -12,6 +12,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 var (
@@ -26,7 +27,8 @@ type Game struct {
 }
 
 func init() {
-	loadImages()
+	initImages()
+	initSounds()
 }
 
 func newGame() *Game {
@@ -45,7 +47,7 @@ func (g *Game) control() {
 		os.Exit(0)
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
 		g.playerShip.fwdThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyUp) && !ebiten.IsKeyPressed(ebiten.KeyW)) {
 		g.playerShip.fwdThrustersOff()
@@ -83,6 +85,8 @@ func (g *Game) Update() error {
 	for i := range g.objects {
 		g.objects[i].Update()
 	}
+
+	updateSound()
 
 	return nil
 }
