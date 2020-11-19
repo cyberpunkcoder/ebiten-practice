@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 var (
@@ -44,27 +45,27 @@ func (g *Game) control() {
 		os.Exit(0)
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
 		g.playerShip.fwdThrustersOn()
-	} else if !(ebiten.IsKeyPressed(ebiten.KeyUp) && !ebiten.IsKeyPressed(ebiten.KeyW)) {
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyW) {
 		g.playerShip.fwdThrustersOff()
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyDown) || ebiten.IsKeyPressed(ebiten.KeyS) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		g.playerShip.revThrustersOn()
-	} else if !(ebiten.IsKeyPressed(ebiten.KeyDown) && ebiten.IsKeyPressed(ebiten.KeyS)) {
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyS) {
 		g.playerShip.revThrustersOff()
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
 		g.playerShip.ccwThrustersOn()
-	} else if !(ebiten.IsKeyPressed(ebiten.KeyLeft) && ebiten.IsKeyPressed(ebiten.KeyA)) {
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyA) {
 		g.playerShip.ccwThrustersOff()
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyRight) || ebiten.IsKeyPressed(ebiten.KeyD) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
 		g.playerShip.cwThrustersOn()
-	} else if !(ebiten.IsKeyPressed(ebiten.KeyRight) && ebiten.IsKeyPressed(ebiten.KeyD)) {
+	} else if inpututil.IsKeyJustReleased(ebiten.KeyD) {
 		g.playerShip.cwThrustersOff()
 	}
 }

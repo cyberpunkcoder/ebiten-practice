@@ -39,6 +39,40 @@ func (ship *Ship) Update() {
 	ship.xPos += ship.xSpd
 	ship.yPos += ship.ySpd
 	ship.rPos = math.Mod(ship.rPos+ship.rSpd, 360)
+
+	if ship.fwdThrusters {
+		radAng := (ship.rPos + 90) * (math.Pi / 180)
+		xSpd := ship.xSpd - 0.01*math.Cos(radAng)
+		ySpd := ship.ySpd - 0.01*math.Sin(radAng)
+
+		if math.Abs(xSpd)+math.Abs(ySpd) < ship.vmax {
+			ship.xSpd = xSpd
+			ship.ySpd = ySpd
+		}
+	}
+
+	if ship.revThrusters {
+		radAng := (ship.rPos + 90) * (math.Pi / 180)
+		xSpd := ship.xSpd + 0.01*math.Cos(radAng)
+		ySpd := ship.ySpd + 0.01*math.Sin(radAng)
+
+		if math.Abs(xSpd)+math.Abs(ySpd) < ship.vmax {
+			ship.xSpd = xSpd
+			ship.ySpd = ySpd
+		}
+	}
+
+	if ship.cwThrusters {
+		if ship.rSpd < ship.rmax {
+			ship.rSpd += 0.05
+		}
+	}
+
+	if ship.ccwThrusters {
+		if ship.rSpd > -ship.rmax {
+			ship.rSpd -= 0.05
+		}
+	}
 }
 
 func (ship *Ship) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions, g *Game) {
@@ -87,10 +121,6 @@ func (ship *Ship) cwThrustersOn() {
 		ship.cwThrusters = true
 		startRcsSound()
 	}
-
-	if ship.rSpd < ship.rmax {
-		ship.rSpd += 0.05
-	}
 }
 
 // Turns off clockwise thrusters
@@ -106,10 +136,6 @@ func (ship *Ship) ccwThrustersOn() {
 	if !ship.ccwThrusters {
 		ship.ccwThrusters = true
 		startRcsSound()
-	}
-
-	if ship.rSpd > -ship.rmax {
-		ship.rSpd -= 0.05
 	}
 }
 
@@ -127,15 +153,6 @@ func (ship *Ship) fwdThrustersOn() {
 		ship.fwdThrusters = true
 		startRcsSound()
 	}
-
-	radAng := (ship.rPos + 90) * (math.Pi / 180)
-	xSpd := ship.xSpd - 0.01*math.Cos(radAng)
-	ySpd := ship.ySpd - 0.01*math.Sin(radAng)
-
-	if math.Abs(xSpd)+math.Abs(ySpd) < ship.vmax {
-		ship.xSpd = xSpd
-		ship.ySpd = ySpd
-	}
 }
 
 // Turns off forward thrusters
@@ -151,15 +168,6 @@ func (ship *Ship) revThrustersOn() {
 	if !ship.revThrusters {
 		ship.revThrusters = true
 		startRcsSound()
-	}
-
-	radAng := (ship.rPos + 90) * (math.Pi / 180)
-	xSpd := ship.xSpd + 0.01*math.Cos(radAng)
-	ySpd := ship.ySpd + 0.01*math.Sin(radAng)
-
-	if math.Abs(xSpd)+math.Abs(ySpd) < ship.vmax {
-		ship.xSpd = xSpd
-		ship.ySpd = ySpd
 	}
 }
 
