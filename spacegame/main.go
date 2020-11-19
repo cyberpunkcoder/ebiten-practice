@@ -7,12 +7,10 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"os"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
@@ -22,8 +20,7 @@ var (
 // Game struct for ebiten
 type Game struct {
 	count      int
-	playerShip Ship
-	objects    []*Object
+	playerShip *Ship
 }
 
 func init() {
@@ -39,7 +36,7 @@ func newGame() *Game {
 
 func (g *Game) init() {
 	g.playerShip = NewShip(float64(screenWidth/2), float64(screenHeight/2))
-	g.objects = append(g.objects, &g.playerShip.Object)
+	objects = append(objects, g.playerShip)
 }
 
 func (g *Game) control() {
@@ -47,7 +44,7 @@ func (g *Game) control() {
 		os.Exit(0)
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
+	if ebiten.IsKeyPressed(ebiten.KeyUp) || ebiten.IsKeyPressed(ebiten.KeyW) {
 		g.playerShip.fwdThrustersOn()
 	} else if !(ebiten.IsKeyPressed(ebiten.KeyUp) && !ebiten.IsKeyPressed(ebiten.KeyW)) {
 		g.playerShip.fwdThrustersOff()
@@ -82,8 +79,8 @@ func (g *Game) Update() error {
 	g.count++
 	g.control()
 
-	for i := range g.objects {
-		g.objects[i].Update()
+	for _, o := range objects {
+		o.Update()
 	}
 
 	updateSound()
@@ -95,43 +92,8 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 
-	for i := range g.objects {
-		g.objects[i].Draw(screen, op, g.count)
-
-		if g.objects[i] == &g.playerShip.Object {
-
-			frame := (g.count / 2) % 2
-
-			if g.playerShip.ccwThrusters {
-				screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-			}
-
-			if g.playerShip.cwThrusters {
-				screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-			}
-
-			if g.playerShip.fwdThrusters {
-				if !g.playerShip.cwThrusters {
-					screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				}
-
-				if !g.playerShip.ccwThrusters {
-					screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				}
-			}
-
-			if g.playerShip.revThrusters {
-				if !g.playerShip.ccwThrusters {
-					screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				}
-
-				if !g.playerShip.cwThrusters {
-					screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
-				}
-			}
-		}
+	for _, o := range objects {
+		o.Draw(screen, op, g)
 	}
 
 	ebitenutil.DebugPrintAt(screen, "Controls = ESC, W, A, S, D", 0, 0)

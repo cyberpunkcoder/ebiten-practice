@@ -1,41 +1,84 @@
 package main
 
 import (
+	"image"
 	"math"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // Ship spaceShip
 type Ship struct {
 	Object
-	lives        int
-	rmax         float64
-	vmax         float64
-	cwThrusters  bool
-	ccwThrusters bool
-	fwdThrusters bool
-	revThrusters bool
+	image            *ebiten.Image
+	xPos, yPos, rPos float64
+	xSpd, ySpd, rSpd float64
+	rmax             float64
+	vmax             float64
+	cwThrusters      bool
+	ccwThrusters     bool
+	fwdThrusters     bool
+	revThrusters     bool
 }
 
 // NewShip at x, y coordinates
-func NewShip(x float64, y float64) Ship {
-
-	obj := Object{
+func NewShip(x float64, y float64) *Ship {
+	return &Ship{
 		image: shipImage,
 		xPos:  x,
 		yPos:  y,
 		xSpd:  0,
 		ySpd:  0,
 		rSpd:  0,
+		rmax:  10,
+		vmax:  1,
+	}
+}
+
+func (ship *Ship) Update() {
+	ship.xPos += ship.xSpd
+	ship.yPos += ship.ySpd
+	ship.rPos = math.Mod(ship.rPos+ship.rSpd, 360)
+}
+
+func (ship *Ship) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions, g *Game) {
+	imgWidth, imgHeight := ship.image.Size()
+	op.GeoM.Translate(-float64(imgWidth)/2, -float64(imgHeight)/2)
+	op.GeoM.Rotate(float64(ship.rPos) * 2 * math.Pi / 360)
+	op.GeoM.Translate(ship.xPos, ship.yPos)
+	screen.DrawImage(ship.image, op)
+
+	frame := (g.count / 2) % 2
+
+	if ship.ccwThrusters {
+		screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
 	}
 
-	ship := Ship{
-		lives:  3,
-		rmax:   10,
-		vmax:   1,
-		Object: obj,
+	if ship.cwThrusters {
+		screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
 	}
 
-	return ship
+	if ship.fwdThrusters {
+		if !ship.cwThrusters {
+			screen.DrawImage(rcsbl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		}
+
+		if !ship.ccwThrusters {
+			screen.DrawImage(rcsbr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		}
+	}
+
+	if ship.revThrusters {
+		if !ship.ccwThrusters {
+			screen.DrawImage(rcsfl.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		}
+
+		if !ship.cwThrusters {
+			screen.DrawImage(rcsfr.SubImage(image.Rect(frame*32, 0, 32+(frame*32), 32)).(*ebiten.Image), op)
+		}
+	}
 }
 
 // Turns on clockwise thrusters
